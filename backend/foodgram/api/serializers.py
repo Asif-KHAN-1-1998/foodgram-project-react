@@ -53,7 +53,7 @@ class TagSerializer(serializers.ModelSerializer):
 class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
-        fields =  '__all__'
+        fields = '__all__'
 
 
 class IngredientWriteSerializer(serializers.ModelSerializer):
@@ -98,10 +98,8 @@ class RecipeReadSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('id', 'author', 'ingredients', 'tags',
                   'name', 'text', 'cooking_time', 'is_favorited',
-                  'is_in_shopping_cart','image')
+                  'is_in_shopping_cart', 'image')
         model = Recipe
-    
-    
 
     def get_is_favorited(self, obj):
         user = self.context['request'].user
@@ -139,10 +137,9 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
                           ContentFile(image_content), save=True)
         create_ingredients(self.context['ingredients'], recipe)
         return recipe
-    
-  
+
     def update(self, instance, validated_data):
-        ingredients_data =  validated_data.pop('ingredients')
+        ingredients_data = validated_data.pop('ingredients')
         tags_data = validated_data.pop('tags')
         instance.name = validated_data.get('name', instance.name)
         instance.text = validated_data.get('text', instance.text)
@@ -155,7 +152,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         instance.save()
         for i in self.context['ingredients']:
             amount = i.get('amount')
-            if  amount is not None :
+            if amount is not None:
                 if i['id'] in ings.values_list('ingredient_id', flat=True):
                     IngredientsRecipe.objects.filter(
                         recipe=instance, ingredient_id=i['id']).update(
@@ -207,8 +204,6 @@ class FavoriteSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'image', 'cooking_time')
 
 
-
-
 class SubcribeList(serializers.ModelSerializer):
     email = serializers.ReadOnlyField(source='author.email')
     id = serializers.ReadOnlyField(source='author.id')
@@ -220,11 +215,12 @@ class SubcribeList(serializers.ModelSerializer):
 
     def get_recipes(self, obj):
         recipes = obj.author.recipes.all()
-        return RecipeReadSerializer(recipes, many=True,context = {'request':self.context['request']}).data
+        return RecipeReadSerializer(recipes, many=True, context={'request': self.context['request']}).data
 
     def get_recipes_count(self, obj):
         return obj.author.recipes.count()
 
     class Meta:
         model = Subscribe
-        fields = ('email', 'id', 'username', 'first_name', 'last_name', 'recipes_count', 'recipes')
+        fields = ('email', 'id', 'username', 'first_name',
+                  'last_name', 'recipes_count', 'recipes')

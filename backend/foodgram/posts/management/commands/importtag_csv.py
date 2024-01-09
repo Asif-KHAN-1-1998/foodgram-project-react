@@ -32,6 +32,6 @@ class Command(BaseCommand):
                 logger.info(f'Добавлено {count_created} тэгов'
                             ' из файла {csv_file_path}')
                 print(f'Добавлено {count_created} тэгов'
-                    ' из файла {csv_file_path}')
+                      ' из файла {csv_file_path}')
         except FileNotFoundError as e:
             logger.error(str(e))

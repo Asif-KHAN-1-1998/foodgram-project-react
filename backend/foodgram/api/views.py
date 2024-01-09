@@ -43,12 +43,9 @@ class IngredientsViewSet(viewsets.ModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = serializers.IngredientSerializer
     pagination_class = None
-    filter_backends = (filters.SearchFilter,DjangoFilterBackend )
+    filter_backends = (filters.SearchFilter, DjangoFilterBackend)
     filterset_class = IngredientFilter
     search_fields = ('^name',)
-
-
-    
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -72,7 +69,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 'tags',
             ).distinct()
 
-        is_in_shopping_cart = self.request.query_params.get('is_in_shopping_cart')
+        is_in_shopping_cart = self.request.query_params.get(
+            'is_in_shopping_cart')
         if is_in_shopping_cart:
             return Recipe.objects.filter(carts__user=self.request.user)
 
@@ -106,7 +104,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         response['Content-Disposition'] = \
             'attachment; filename="shopping_cart.txt"'
         return response
-    
+
     @action(
         detail=True,
         methods=['post', 'delete'],
@@ -126,7 +124,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
             if card.exists():
                 return Response({'errors': 'Рецепт уже в корзине'},
                                 status=status.HTTP_400_BAD_REQUEST)
-            card = ShoppingCard.objects.create(recipe=recipe,user = request.user)
+            card = ShoppingCard.objects.create(
+                recipe=recipe, user=request.user)
             serializer = serializers.ShoppingCartSerializer(card)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -139,7 +138,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
                                 status=status.HTTP_400_BAD_REQUEST)
             card.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-            
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -151,7 +149,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
             ingredients_ids = [ingredient['id'] for ingredient in ingredients]
             data['ingredients'] = ingredients_ids
 
-        serializer = self.get_serializer(instance, data=request.data,context = {'ingredients':ingredientss, 'request': request})
+        serializer = self.get_serializer(instance, data=request.data, context={
+                                         'ingredients': ingredientss, 'request': request})
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
@@ -165,12 +164,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
             ingredients_ids = [ingredient['id'] for ingredient in ingredients]
             data['ingredients'] = ingredients_ids
 
-        serializer = self.get_serializer(data=request.data,context = {'ingredients':ingredientss, 'request': request})
+        serializer = self.get_serializer(data=request.data, context={
+                                         'ingredients': ingredientss, 'request': request})
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
         return Response(serializer.data)
-        
 
 
 class SubcribeCreateDeleteViewSet(viewsets.ModelViewSet):
@@ -293,11 +292,13 @@ class SubscribeListView(ListAPIView):
     def get_queryset(self):
         print(self.request.user)
         return Subscribe.objects.filter(user=self.request.user)
-    
+
     def list(self, request, *args, **kwargs):
         qs = self.get_queryset()
-        serializer = serializers.SubcribeList(qs, many=True,context = {'request': request})
-        return Response({'results':serializer.data, 'count':self.get_queryset().count()})
+        serializer = serializers.SubcribeList(
+            qs, many=True, context={'request': request})
+        return Response({'results': serializer.data, 'count': self.get_queryset().count()})
+
 
 class FavoriteListView(ListAPIView):
     queryset = Favorite.objects.all()
@@ -306,10 +307,12 @@ class FavoriteListView(ListAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        fvs =Favorite.objects.filter(user=self.request.user).values_list('recipe', flat=True)
+        fvs = Favorite.objects.filter(
+            user=self.request.user).values_list('recipe', flat=True)
         return Recipe.objects.filter(id__in=fvs)
-    
+
     def list(self, request, *args, **kwargs):
         qs = self.get_queryset()
-        serializer = serializers.RecipeReadSerializer(qs, many=True,context = {'request': request})
-        return Response({'results':serializer.data, 'count':self.get_queryset().count()})
+        serializer = serializers.RecipeReadSerializer(
+            qs, many=True, context={'request': request})
+        return Response({'results': serializer.data, 'count': self.get_queryset().count()})

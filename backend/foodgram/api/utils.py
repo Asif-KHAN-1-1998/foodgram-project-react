@@ -7,7 +7,6 @@ from rest_framework.response import Response
 from posts.models import Ingredient, IngredientsRecipe
 
 
-
 def create_ingredients(ingredients, recipe):
     """Вспомогательная функция для добавления ингредиентов.
     Используется при создании/редактировании рецепта."""
@@ -24,5 +23,3 @@ def create_ingredients(ingredients, recipe):
             )
         )
     IngredientsRecipe.objects.bulk_create(ingredient_list)
-
-

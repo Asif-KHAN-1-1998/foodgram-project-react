@@ -5,7 +5,7 @@ from django.urls import include, path
 from api.views import (SubscribeListView, TagsViewSet, IngredientsViewSet,
                        RecipeViewSet, FavoriteViewSet,
                        ShoppingCartViewSet,
-                       SubcribeCreateDeleteViewSet,FavoriteListView)
+                       SubcribeCreateDeleteViewSet, FavoriteListView)
 from users.views import UserViewSet
 
 
