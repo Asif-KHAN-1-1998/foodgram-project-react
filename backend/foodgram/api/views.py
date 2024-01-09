@@ -148,10 +148,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
             ingredients_ids = [ingredient['id'] for ingredient in ingredients]
             data['ingredients'] = ingredients_ids
 
-        serializer = self.get_serializer(instance, 
-                                                data=request.data, context={
-                                               'ingredients': ingredientss, 
-                                               'request': request})
+        serializer = self.get_serializer(instance,
+                                                data=request.data, 
+                                                context={
+                                                'ingredients': ingredientss,
+                                                'request': request}
+                                                )
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
@@ -165,9 +167,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
             ingredients_ids = [ingredient['id'] for ingredient in ingredients]
             data['ingredients'] = ingredients_ids
 
-        serializer = self.get_serializer(data=request.data, 
+        serializer = self.get_serializer(data=request.data,
                                                 context={
-                                                'ingredients': ingredientss, 
+                                                'ingredients': ingredientss,
                                                 'request': request})
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -300,7 +302,7 @@ class SubscribeListView(ListAPIView):
         qs = self.get_queryset()
         serializer = serializers.SubcribeList(
             qs, many=True, context={'request': request})
-        return Response({'results': serializer.data, 
+        return Response({'results': serializer.data,
                          'count': self.get_queryset().count()})
 
 
@@ -319,5 +321,5 @@ class FavoriteListView(ListAPIView):
         qs = self.get_queryset()
         serializer = serializers.RecipeReadSerializer(
             qs, many=True, context={'request': request})
-        return Response({'results': serializer.data, 
+        return Response({'results': serializer.data,
                          'count': self.get_queryset().count()})

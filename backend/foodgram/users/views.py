@@ -24,8 +24,8 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         pass
 
-    @action(detail=True, 
-            methods=["POST", "DELETE"], 
+    @action(detail=True,
+            methods=["POST", "DELETE"],
             permission_classes=(IsAuthenticated,))
     def subscribe(self, request, pk=None):
         author = self.get_object()
