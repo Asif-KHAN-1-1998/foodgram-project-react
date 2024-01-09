@@ -48,7 +48,7 @@ const Subscription = ({ email, first_name, last_name, username, removeSubscripti
     <div className={styles.subscriptionFooter}>
       <Button
         className={styles.subscriptionButton}
-        clickHandler={_ => {
+        clickHandler={() => {
           removeSubscription({ id })
         }}
       >

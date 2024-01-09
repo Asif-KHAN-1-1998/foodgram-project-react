@@ -19,6 +19,7 @@ const SubscriptionsPage = () => {
     api
       .getSubscriptions({ page })
       .then(res => {
+        console.log(res);
         setSubscriptions(res.results)
         setSubscriptionsCount(res.count)
       })

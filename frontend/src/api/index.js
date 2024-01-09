@@ -126,6 +126,26 @@ class Api {
       ).then(this.checkResponse)
   }
 
+  getFavourite ({ page = 1,
+    limit = 6,
+    tags}) {
+    const token = localStorage.getItem('token')
+    const authorization = token ? { 'authorization': `Token ${token}` } : {}
+    const tagsString = tags ? tags.filter(tag => tag.value).map(tag => `&tags=${tag.slug}`).join('') : ''
+    return fetch(
+      `/api/favourites/?page=${page}&limit=${limit}${tagsString}`,
+      {
+        method: 'GET',
+        headers: {
+          ...this._headers,
+          ...authorization
+        }
+      }
+    ).then(this.checkResponse)
+  }
+
+
+
   getRecipe ({
     recipe_id
   }) {
@@ -234,7 +254,7 @@ class Api {
   getUser ({ id }) {
     const token = localStorage.getItem('token')
     return fetch(
-      `/api/users/${id}/`,
+      `api/users/${id}/`,
       {
         method: 'GET',
         headers: {
@@ -271,7 +291,7 @@ class Api {
   }) {
     const token = localStorage.getItem('token')
     return fetch(
-      `/api/users/subscriptions/?page=${page}&limit=${limit}&recipes_limit=${recipes_limit}`,
+      `/api/subscriptions/?page=${page}&limit=${limit}&recipes_limit=${recipes_limit}`,
       {
         method: 'GET',
         headers: {
@@ -318,7 +338,7 @@ class Api {
   getIngredients ({ name }) {
     const token = localStorage.getItem('token')
     return fetch(
-      `/api/ingredients/?name=${name}`,
+      `/api/ingredient/?name=${name}`,
       {
         method: 'GET',
         headers: {
