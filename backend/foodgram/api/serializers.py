@@ -1,4 +1,4 @@
-
+import os
 
 from django.core.files.base import ContentFile
 from django.contrib.auth import get_user_model
@@ -11,9 +11,11 @@ from djoser.serializers import (UserCreateSerializer
 from posts.models import (Tag, Ingredient, Recipe, IngredientsRecipe,
                           Favorite, ShoppingCard, Subscribe)
 from posts import validators
+from dotenv import load_dotenv
 
 from .utils import create_ingredients
 User = get_user_model()
+load_dotenv()
 
 
 class UserCreateSerializer(DjoserUserCreateSerializer):
@@ -92,8 +94,10 @@ class RecipeReadSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
 
     def get_image(self, obj):
+        load_dotenv()
+        server_ip = os.getenv('SERVER_IP')
 
-        return f"http://130.193.43.254:9000{obj.image.url}"
+        return f"http://{server_ip}:9000{obj.image.url}"
 
     class Meta:
         fields = ('id', 'author', 'ingredients', 'tags',
@@ -212,11 +216,14 @@ class SubcribeList(serializers.ModelSerializer):
     last_name = serializers.ReadOnlyField(source='author.last_name')
     recipes_count = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()
+    author = UserSerializer(
+        read_only=True,
+    )
 
     def get_recipes(self, obj):
         recipes = obj.author.recipes.all()
-        return RecipeReadSerializer(recipes, 
-                                    many=True, 
+        return RecipeReadSerializer(recipes,
+                                    many=True,
                                     context={'request': self.context['request']}).data
 
     def get_recipes_count(self, obj):

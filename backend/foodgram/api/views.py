@@ -149,10 +149,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
             data['ingredients'] = ingredients_ids
 
         serializer = self.get_serializer(instance,
-                                                data=request.data, 
+                                                data=request.data,
                                                 context={
-                                                'ingredients': ingredientss,
-                                                'request': request}
+                                                         'ingredients': ingredientss,
+                                                         'request': request
+                                                        }
                                                 )
         serializer.is_valid(raise_exception=True)
         serializer.save()
