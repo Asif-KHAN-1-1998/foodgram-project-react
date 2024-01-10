@@ -149,12 +149,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
             data['ingredients'] = ingredients_ids
 
         serializer = self.get_serializer(instance,
-                                                data=request.data,
-                                                context={
-                                                         'ingredients': ingredientss,
-                                                         'request': request
-                                                        }
-                                                )
+                                         data=request.data,
+                                         context={
+                                             'ingredients': ingredientss,
+                                             'request': request
+                                         }
+                                         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
@@ -169,9 +169,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
             data['ingredients'] = ingredients_ids
 
         serializer = self.get_serializer(data=request.data,
-                                                context={
-                                                'ingredients': ingredientss,
-                                                'request': request})
+                                         context={
+                                             'ingredients': ingredientss,
+                                             'request': request})
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
