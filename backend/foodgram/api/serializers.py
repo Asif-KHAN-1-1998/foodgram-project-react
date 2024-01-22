@@ -206,7 +206,7 @@ class SubscriptionCreateSerializer(serializers.ModelSerializer):
         fields = ('author', )
 
 
-class SubcribeList(serializers.ModelSerializer):
+class SubcribeListSerializer(serializers.ModelSerializer):
     email = serializers.ReadOnlyField(source='author.email')
     id = serializers.ReadOnlyField(source='author.id')
     username = serializers.ReadOnlyField(source='author.username')
@@ -217,7 +217,9 @@ class SubcribeList(serializers.ModelSerializer):
 
     def get_recipes(self, obj):
         recipes = obj.author.recipes.all()
-        return RecipeGetSerializer(recipes, many=True, context={'request': self.context['request']}).data
+        return RecipeGetSerializer(recipes,
+                                   many=True,
+                                   context={'request': self.context['request']}).data
 
     def get_recipes_count(self, obj):
         return obj.author.recipes.count()

@@ -1,12 +1,27 @@
 from rest_framework import generics, permissions, status, filters
 from rest_framework.response import Response
-from .serializers import *
+from .serializers import (TagSerializer,
+                          IngredientSerializer,
+                          RecipeGetSerializer,
+                          RecipeCreateSerializer,
+                          FavouriteSerializer,
+                          SubcribeListSerializer,
+                          SubscriptionCreateSerializer,
+                          )
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Q
 import django_filters
 from .filters import TagFilter, IngredientFilter, RecipesFilter
-from recipes.models import Ingredient, Recipe, Tag, Favourite, Subscription, ShoppingCart
+from users.models import CustomUser
+from recipes.models import (Ingredient,
+                            Recipe,
+                            Tag,
+                            Favourite,
+                            Subscription,
+                            ShoppingCart,
+                            IngredientsInRecipe,
+                            )
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from django.db.models import Sum
@@ -214,7 +229,7 @@ class DownloadShoppingCart(APIView):
 
 class SubscribeList(generics.ListAPIView):
     queryset = Subscription.objects.all()
-    serializer_class = SubcribeList
+    serializer_class = SubcribeListSerializer
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [
         django_filters.rest_framework.DjangoFilterBackend, filters.SearchFilter]
@@ -238,14 +253,14 @@ class SubscribeCreateDelete(generics.CreateAPIView, generics.DestroyAPIView):
         author = self.kwargs.get('author')
         if not author:
             return Response({"errors": "Not author"}, status=status.HTTP_400_BAD_REQUEST)
-        author = get_object_or_404(User, id=author)
+        author = get_object_or_404(CustomUser, id=author)
         subscribe = Subscription.objects.filter(
             user=request.user, author=author)
         if subscribe.exists():
             return Response({"errors": "Ошибка подписки (Например, когда подписка уже существует)"}, status=status.HTTP_400_BAD_REQUEST)
         subscribe = Subscription.objects.create(
             user=request.user, author=author)
-        serializer = SubcribeList(
+        serializer = SubcribeListSerializer(
             subscribe, many=False, context={'request': request})
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
