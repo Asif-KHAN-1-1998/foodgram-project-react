@@ -3,24 +3,14 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-
-SECRET_KEY = os.getenv('SECRET_KEY', default='token')
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 
 DEBUG = True
-ALLOWED_HOSTS = ['*', ]
+ALLOWED_HOSTS = ('*', )
 CORS_ORIGIN_ALLOW_ALL = True
-
-CORS_ALLOW_METHODS = [
-    '*'
-]
-
-CORS_ALLOW_HEADERS = [
-    '*'
-]
-CORS_ALLOW_CREDENTIALS = True
 
 
 INSTALLED_APPS = [
@@ -33,10 +23,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
-    "corsheaders",
     'api.apps.ApiConfig',
     'users.apps.UsersConfig',
-    'posts.apps.PostsConfig',
+    'recipes.apps.RecipesConfig',
     'django_filters',
     'colorfield',
 ]
@@ -72,11 +61,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -87,11 +71,6 @@ DATABASES = {
         'PORT': os.getenv('DB_PORT', 5432)
 
     }
-
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    #  }
 
 }
 
@@ -116,14 +95,14 @@ REST_FRAMEWORK = {
         'django_filters.rest_framework.DjangoFilterBackend',
         'rest_framework.filters.SearchFilter',
     ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',),
     'DEFAULT_PAGINATION_CLASS':
         'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.TokenAuthentication',)
 }
 
-AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = 'users.CustomUser'
 
 
 LANGUAGE_CODE = 'en-us'
@@ -136,11 +115,10 @@ USE_L10N = True
 
 USE_TZ = True
 
-
+BASE_URL = 'http://130.193.43.254:9000'
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+SCV_DATA = (os.path.join(BASE_DIR, 'static'),)
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
@@ -151,20 +129,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 DJOSER = {
     'LOGIN_FIELD': 'email',
     'SERIALIZERS': {
-        'user_create': 'api.serializers.UserCreateSerializer',
-        'current_user': 'api.serializers.UserSerializer',
-        'user': 'api.serializers.UserSerializer',
+        'user_create': 'users.serializers.UserSignUpSerializer',
+        'current_user': 'users.serializers.UserGetSerializer',
+        'user': 'users.serializers.UserGetSerializer',
 
     },
     'PASSWORD_RESET_CONFIRM_URL': 'auth/reset_password_qconfirm/?uid={uid}&token={token}',
     'PASSWORD_CHANGED_EMAIL_CONFIRMATION': True,
 }
 
-
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_USE_TLS = False
-EMAIL_PORT = 465
-EMAIL_USE_SSL = True
-EMAIL_HOST_USER = 'yourgmail@gmail.com'
-EMAIL_HOST_PASSWORD = 'hammwscsldkaimmz'
+MIN_TIME = 1
+MAX_TIME = 120
