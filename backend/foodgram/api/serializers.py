@@ -219,15 +219,22 @@ class SubcribeListSerializer(serializers.ModelSerializer):
         recipes = obj.author.recipes.all()
         return RecipeGetSerializer(recipes,
                                    many=True,
-                                   context={'request': self.context['request']}).data
+                                   context={'request': \
+                                            self.context\
+                                                ['request']}).data
 
     def get_recipes_count(self, obj):
         return obj.author.recipes.count()
 
     class Meta:
         model = Subscription
-        fields = ('email', 'id', 'username', 'first_name',
-                  'last_name', 'recipes_count', 'recipes')
+        fields = ('email',
+                  'id',
+                  'username',
+                  'first_name',
+                  'last_name',
+                  'recipes_count',
+                  'recipes')
 
 
 class FavouriteSerializer(serializers.Serializer):

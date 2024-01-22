@@ -34,7 +34,9 @@ class TagList(generics.ListAPIView):
     pagination_class = None
     permission_classes = [permissions.AllowAny]
     filter_backends = [
-        django_filters.rest_framework.DjangoFilterBackend, filters.SearchFilter]
+        django_filters.rest_framework.DjangoFilterBackend,
+        filters.SearchFilter
+        ]
     filterset_class = TagFilter
     search_fields = ['^name',]
 
@@ -51,7 +53,9 @@ class IngredientList(generics.ListAPIView):
     pagination_class = None
     permission_classes = [permissions.AllowAny]
     filter_backends = [
-        django_filters.rest_framework.DjangoFilterBackend, filters.SearchFilter]
+        django_filters.rest_framework.DjangoFilterBackend,
+        filters.SearchFilter
+        ]
     filterset_class = IngredientFilter
 
 
@@ -145,12 +149,12 @@ class FavoriteCreateDelete(generics.CreateAPIView, generics.DestroyAPIView):
     def create(self, request, *args, **kwargs):
         recipe = self.kwargs.get('recipe')
         if not recipe:
-            return Response({"errors": "Ошибка добавления в избранное (Например, когда рецепт уже есть в избранном)"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"errors": "Рецепт уже есть в избранном"}, status=status.HTTP_400_BAD_REQUEST)
         recipe = get_object_or_404(Recipe, id=recipe)
         favourite = Favourite.objects.filter(
             user=request.user, recipe=recipe)
         if favourite.exists():
-            return Response({"errors": "Ошибка добавления в избранное (Например, когда рецепт уже есть в избранном)"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"errors": "Рецепт уже есть в избранном"}, status=status.HTTP_400_BAD_REQUEST)
         favourite = Favourite.objects.create(
             user=request.user, recipe=recipe)
         serializer = FavouriteSerializer(recipe, many=False)
@@ -159,12 +163,12 @@ class FavoriteCreateDelete(generics.CreateAPIView, generics.DestroyAPIView):
     def destroy(self, request, *args, **kwargs):
         recipe = self.kwargs.get('recipe')
         if not recipe:
-            return Response({"errors": "Ошибка удаления из избранного (Например, когда рецепт уже есть в избранном)"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"errors": "Рецепт уже есть в избранном"}, status=status.HTTP_400_BAD_REQUEST)
         recipe = get_object_or_404(Recipe, id=recipe)
         favourite = Favourite.objects.filter(
             user=request.user, recipe=recipe)
         if not favourite.exists():
-            return Response({"errors": "Ошибка удаления из избранного (Например, когда рецепт уже есть в избранном)"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"errors": "Рецепт уже есть в избранном"}, status=status.HTTP_400_BAD_REQUEST)
         favourite.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -179,12 +183,12 @@ class ShoppingCartCreateDelete(generics.CreateAPIView, generics.DestroyAPIView):
     def create(self, request, *args, **kwargs):
         recipe = self.kwargs.get('recipe')
         if not recipe:
-            return Response({"errors": "Ошибка добавления в список покупок (Например, когда рецепт уже есть в списке покупок)"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"errors": "Рецепт уже есть в списке покупок"}, status=status.HTTP_400_BAD_REQUEST)
         recipe = get_object_or_404(Recipe, id=recipe)
         shopping_cart = ShoppingCart.objects.filter(
             user=request.user, recipe=recipe)
         if shopping_cart.exists():
-            return Response({"errors": "Ошибка добавления в список покупок (Например, когда рецепт уже есть в списке покупок)"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"errors": "ецепт уже есть в списке покупок"}, status=status.HTTP_400_BAD_REQUEST)
         shopping_cart = ShoppingCart.objects.create(
             user=request.user, recipe=recipe)
         serializer = FavouriteSerializer(recipe, many=False)
@@ -193,12 +197,12 @@ class ShoppingCartCreateDelete(generics.CreateAPIView, generics.DestroyAPIView):
     def destroy(self, request, *args, **kwargs):
         recipe = self.kwargs.get('recipe')
         if not recipe:
-            return Response({"errors": "Ошибка удаления из списка покупок (Например, когда рецепт уже есть в списке покупок)"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"errors": "Рецепт уже есть в списке покупок"}, status=status.HTTP_400_BAD_REQUEST)
         recipe = get_object_or_404(Recipe, id=recipe)
         shopping_cart = ShoppingCart.objects.filter(
             user=request.user, recipe=recipe)
         if not shopping_cart.exists():
-            return Response({"errors": "Ошибка удаления из списка покупок (Например, когда рецепт уже есть в списке покупок)"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"errors": "Рецепт уже есть в списке покупок"}, status=status.HTTP_400_BAD_REQUEST)
         shopping_cart.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -257,7 +261,7 @@ class SubscribeCreateDelete(generics.CreateAPIView, generics.DestroyAPIView):
         subscribe = Subscription.objects.filter(
             user=request.user, author=author)
         if subscribe.exists():
-            return Response({"errors": "Ошибка подписки (Например, когда подписка уже существует)"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"errors": "Подписка уже существует"}, status=status.HTTP_400_BAD_REQUEST)
         subscribe = Subscription.objects.create(
             user=request.user, author=author)
         serializer = SubcribeListSerializer(
