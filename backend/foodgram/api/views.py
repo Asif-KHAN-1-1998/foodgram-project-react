@@ -38,7 +38,7 @@ class TagList(generics.ListAPIView):
         filters.SearchFilter
     ]
     filterset_class = TagFilter
-    search_fields = ['^name',]
+    search_fields = ['^name', ]
 
 
 class TagDetail(generics.RetrieveAPIView):
@@ -69,12 +69,12 @@ class RecipeListCreate(generics.ListCreateAPIView):
     queryset = Recipe.objects.all()
     serializer_class = RecipeGetSerializer
     pagination_class = PageNumberPagination
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly,]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, ]
     filter_backends = [
         django_filters.rest_framework.DjangoFilterBackend,
         filters.SearchFilter]
     filterset_class = RecipesFilter
-    search_fields = ['^name',]
+    search_fields = ['^name', ]
 
     def get_queryset(self):
         is_in_cart = self.request.query_params.get('is_in_shopping_cart')
@@ -101,7 +101,7 @@ class RecipeListCreate(generics.ListCreateAPIView):
 class RecipeRetrieveUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
     queryset = Recipe.objects.all()
     serializer_class = RecipeGetSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly,]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, ]
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
@@ -186,7 +186,8 @@ class FavouriteCreateDelete(generics.CreateAPIView, generics.DestroyAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class ShoppingCartCreateDelete(generics.CreateAPIView, generics.DestroyAPIView):
+class ShoppingCartCreateDelete(generics.CreateAPIView,
+                               generics.DestroyAPIView):
     queryset = ShoppingCart.objects.all()
     serializer_class = FavouriteSerializer
     pagination_class = None
