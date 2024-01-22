@@ -4,7 +4,14 @@ from rest_framework import serializers
 from djoser.serializers import (UserCreateSerializer
                                 as DjoserUserCreateSerializer)
 
-from recipes.models import *
+from recipes.models import (CustomUser,
+                            Subscription,
+                            Tag,
+                            Ingredient,
+                            IngredientsInRecipe,
+                            Favourite,
+                            ShoppingCart,
+                            Recipe)
 from recipes import validators
 from django.conf import settings
 
@@ -21,7 +28,7 @@ class UserCreateSerializer(DjoserUserCreateSerializer):
             'password',
             'first_name',
             'last_name',
-            )
+        )
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -92,7 +99,7 @@ class RecipeGetSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
     ingredients = IngredientWriteSerializer(many=True, read_only=True)
     image = serializers.SerializerMethodField()
-    is_favorited = serializers.SerializerMethodField()
+    is_favourited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
     ingredients = serializers.SerializerMethodField()
     count = serializers.SerializerMethodField()
@@ -105,10 +112,10 @@ class RecipeGetSerializer(serializers.ModelSerializer):
             return f"{settings.BASE_URL}{obj.image.url}"
         return None
 
-    def get_is_favorited(self, obj):
+    def get_is_favourited(self, obj):
         request = self.context.get('request')
         return (request.user.is_authenticated
-                and Favorite.objects.filter(
+                and Favourite.objects.filter(
                     user=request.user, recipe=obj
                 ).exists())
 
@@ -221,7 +228,7 @@ class SubcribeList(serializers.ModelSerializer):
                   'last_name', 'recipes_count', 'recipes')
 
 
-class FavoriteSerializer(serializers.Serializer):
+class FavouriteSerializer(serializers.Serializer):
     id = serializers.ReadOnlyField()
     name = serializers.ReadOnlyField()
     image = serializers.SerializerMethodField(read_only=True)

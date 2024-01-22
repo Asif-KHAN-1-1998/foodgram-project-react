@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.db.models import Q
 import django_filters
 from .filters import TagFilter, IngredientFilter, RecipesFilter
-from recipes.models import Ingredient, Recipe, Tag, Favorite, Subscription, ShoppingCart
+from recipes.models import Ingredient, Recipe, Tag, Favourite, Subscription, ShoppingCart
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from django.db.models import Sum
@@ -100,13 +100,13 @@ class RecipeRetrieveUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
 
 
 class FavoriteListView(generics.ListAPIView):
-    queryset = Favorite.objects.all()
-    serializer_class = FavoriteSerializer
+    queryset = Favourite.objects.all()
+    serializer_class = FavouriteSerializer
     pagination_class = None
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        fvs = Favorite.objects.filter(
+        fvs = Favourite.objects.filter(
             user=self.request.user).values_list('recipe', flat=True)
         tags = self.request.query_params.getlist('tags')
         if tags:
@@ -121,8 +121,8 @@ class FavoriteListView(generics.ListAPIView):
 
 
 class FavoriteCreateDelete(generics.CreateAPIView, generics.DestroyAPIView):
-    queryset = Favorite.objects.all()
-    serializer_class = FavoriteSerializer
+    queryset = Favourite.objects.all()
+    serializer_class = FavouriteSerializer
     pagination_class = None
     permission_classes = [permissions.IsAuthenticated]
     lookup_field = 'recipe'
@@ -132,13 +132,13 @@ class FavoriteCreateDelete(generics.CreateAPIView, generics.DestroyAPIView):
         if not recipe:
             return Response({"errors": "Ошибка добавления в избранное (Например, когда рецепт уже есть в избранном)"}, status=status.HTTP_400_BAD_REQUEST)
         recipe = get_object_or_404(Recipe, id=recipe)
-        favourite = Favorite.objects.filter(
+        favourite = Favourite.objects.filter(
             user=request.user, recipe=recipe)
         if favourite.exists():
             return Response({"errors": "Ошибка добавления в избранное (Например, когда рецепт уже есть в избранном)"}, status=status.HTTP_400_BAD_REQUEST)
-        favourite = Favorite.objects.create(
+        favourite = Favourite.objects.create(
             user=request.user, recipe=recipe)
-        serializer = FavoriteSerializer(recipe, many=False)
+        serializer = FavouriteSerializer(recipe, many=False)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def destroy(self, request, *args, **kwargs):
@@ -146,7 +146,7 @@ class FavoriteCreateDelete(generics.CreateAPIView, generics.DestroyAPIView):
         if not recipe:
             return Response({"errors": "Ошибка удаления из избранного (Например, когда рецепт уже есть в избранном)"}, status=status.HTTP_400_BAD_REQUEST)
         recipe = get_object_or_404(Recipe, id=recipe)
-        favourite = Favorite.objects.filter(
+        favourite = Favourite.objects.filter(
             user=request.user, recipe=recipe)
         if not favourite.exists():
             return Response({"errors": "Ошибка удаления из избранного (Например, когда рецепт уже есть в избранном)"}, status=status.HTTP_400_BAD_REQUEST)
@@ -156,7 +156,7 @@ class FavoriteCreateDelete(generics.CreateAPIView, generics.DestroyAPIView):
 
 class ShoppingCartCreateDelete(generics.CreateAPIView, generics.DestroyAPIView):
     queryset = ShoppingCart.objects.all()
-    serializer_class = FavoriteSerializer
+    serializer_class = FavouriteSerializer
     pagination_class = None
     permission_classes = [permissions.IsAuthenticated]
     lookup_field = 'recipe'
@@ -172,7 +172,7 @@ class ShoppingCartCreateDelete(generics.CreateAPIView, generics.DestroyAPIView):
             return Response({"errors": "Ошибка добавления в список покупок (Например, когда рецепт уже есть в списке покупок)"}, status=status.HTTP_400_BAD_REQUEST)
         shopping_cart = ShoppingCart.objects.create(
             user=request.user, recipe=recipe)
-        serializer = FavoriteSerializer(recipe, many=False)
+        serializer = FavouriteSerializer(recipe, many=False)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def destroy(self, request, *args, **kwargs):
@@ -190,7 +190,7 @@ class ShoppingCartCreateDelete(generics.CreateAPIView, generics.DestroyAPIView):
 
 class DownloadShoppingCart(APIView):
     queryset = ShoppingCart.objects.all()
-    serializer_class = FavoriteSerializer
+    serializer_class = FavouriteSerializer
     pagination_class = None
     permission_classes = [permissions.IsAuthenticated]
 

@@ -95,18 +95,18 @@ class Recipe(models.Model):
         return self.name
 
 
-class Favorite(models.Model):
+class Favourite(models.Model):
     """Модель рецептов в избранном."""
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='favorites',
+        related_name='favourites',
         verbose_name='Рецепт',
     )
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='favorites',
+        related_name='favourites',
         verbose_name='Пользователь'
     )
 

@@ -18,7 +18,7 @@ class RecipeAdmin(admin.ModelAdmin):
 class IngredientAdmin(admin.ModelAdmin):
     list_display = (
         'id',
-        'name', 
+        'name',
         'measurement_unit',)
     search_fields = ('^name',)
 
