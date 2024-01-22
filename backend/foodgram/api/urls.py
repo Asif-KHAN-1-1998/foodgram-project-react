@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import (TagList,
-                    TagDetail,RecipeListCreate,
+                    TagDetail,
+                    RecipeListCreate,
                     RecipeRetrieveUpdateDelete,
                     FavouriteCreateDelete,
                     ShoppingCartCreateDelete,

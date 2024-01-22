@@ -130,14 +130,18 @@ class FavouriteListView(generics.ListAPIView):
             user=self.request.user).values_list('recipe', flat=True)
         tags = self.request.query_params.getlist('tags')
         if tags:
-            return Recipe.objects.filter(Q(id__in=fvs) & Q(tags__slug__in=tags)).distinct()
+            return Recipe.objects.filter(Q(id__in=fvs) 
+                                         &
+                                         Q(tags__slug__in=tags)
+                                         ).distinct()
         return Recipe.objects.filter(id__in=fvs)[:0]
 
     def list(self, request, *args, **kwargs):
         qs = self.get_queryset()
         serializer = RecipeGetSerializer(
             qs, many=True, context={'request': request})
-        return Response({'results': serializer.data, 'count': self.get_queryset().count()})
+        return Response({'results': serializer.data,
+                         'count': self.get_queryset().count()})
 
 
 class FavouriteCreateDelete(generics.CreateAPIView, generics.DestroyAPIView):
@@ -150,13 +154,15 @@ class FavouriteCreateDelete(generics.CreateAPIView, generics.DestroyAPIView):
     def create(self, request, *args, **kwargs):
         recipe = self.kwargs.get('recipe')
         if not recipe:
-            return Response({"errors": "Рецепт уже есть в избранном"},
+            return Response({"errors":
+                             "Рецепт уже есть в избранном"},
                             status=status.HTTP_400_BAD_REQUEST)
         recipe = get_object_or_404(Recipe, id=recipe)
         favourite = Favourite.objects.filter(
             user=request.user, recipe=recipe)
         if favourite.exists():
-            return Response({"errors": "Рецепт уже есть в избранном"},
+            return Response({"errors":
+                             "Рецепт уже есть в избранном"},
                             status=status.HTTP_400_BAD_REQUEST)
         favourite = Favourite.objects.create(
             user=request.user, recipe=recipe)
@@ -166,13 +172,15 @@ class FavouriteCreateDelete(generics.CreateAPIView, generics.DestroyAPIView):
     def destroy(self, request, *args, **kwargs):
         recipe = self.kwargs.get('recipe')
         if not recipe:
-            return Response({"errors": "Рецепт уже есть в избранном"},
+            return Response({"errors":
+                             "Рецепт уже есть в избранном"},
                             status=status.HTTP_400_BAD_REQUEST)
         recipe = get_object_or_404(Recipe, id=recipe)
         favourite = Favourite.objects.filter(
             user=request.user, recipe=recipe)
         if not favourite.exists():
-            return Response({"errors": "Рецепт уже есть в избранном"},
+            return Response({"errors":
+                             "Рецепт уже есть в избранном"},
                             status=status.HTTP_400_BAD_REQUEST)
         favourite.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -188,13 +196,15 @@ class ShoppingCartCreateDelete(generics.CreateAPIView, generics.DestroyAPIView):
     def create(self, request, *args, **kwargs):
         recipe = self.kwargs.get('recipe')
         if not recipe:
-            return Response({"errors": "Рецепт уже есть в списке покупок"},
+            return Response({"errors":
+                             "Рецепт уже есть в списке покупок"},
                             status=status.HTTP_400_BAD_REQUEST)
         recipe = get_object_or_404(Recipe, id=recipe)
         shopping_cart = ShoppingCart.objects.filter(
             user=request.user, recipe=recipe)
         if shopping_cart.exists():
-            return Response({"errors": "ецепт уже есть в списке покупок"},
+            return Response({"errors":
+                             "ецепт уже есть в списке покупок"},
                             status=status.HTTP_400_BAD_REQUEST)
         shopping_cart = ShoppingCart.objects.create(
             user=request.user, recipe=recipe)
@@ -204,7 +214,8 @@ class ShoppingCartCreateDelete(generics.CreateAPIView, generics.DestroyAPIView):
     def destroy(self, request, *args, **kwargs):
         recipe = self.kwargs.get('recipe')
         if not recipe:
-            return Response({"errors": "Рецепт уже есть в списке покупок"},
+            return Response({"errors":
+                             "Рецепт уже есть в списке покупок"},
                             status=status.HTTP_400_BAD_REQUEST)
         recipe = get_object_or_404(Recipe, id=recipe)
         shopping_cart = ShoppingCart.objects.filter(
@@ -257,7 +268,8 @@ class SubscribeList(generics.ListAPIView):
         return Subscription.objects.filter(user=user)
 
 
-class SubscribeCreateDelete(generics.CreateAPIView, generics.DestroyAPIView):
+class SubscribeCreateDelete(generics.CreateAPIView,
+                            generics.DestroyAPIView):
     queryset = Subscription.objects.all()
     serializer_class = SubscriptionCreateSerializer
     pagination_class = None
@@ -279,7 +291,8 @@ class SubscribeCreateDelete(generics.CreateAPIView, generics.DestroyAPIView):
             user=request.user, author=author)
         serializer = SubcribeListSerializer(
             subscribe, many=False, context={'request': request})
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.data,
+                        status=status.HTTP_201_CREATED)
 
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
