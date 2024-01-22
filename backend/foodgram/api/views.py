@@ -130,9 +130,9 @@ class FavouriteListView(generics.ListAPIView):
             user=self.request.user).values_list('recipe', flat=True)
         tags = self.request.query_params.getlist('tags')
         if tags:
-            return Recipe.objects.filter(Q(id__in=fvs) 
-                                         &
-                                         Q(tags__slug__in=tags)
+            return Recipe.objects.filter(Q(id__in=fvs)
+
+                                         & Q(tags__slug__in=tags)
                                          ).distinct()
         return Recipe.objects.filter(id__in=fvs)[:0]
 
@@ -262,8 +262,11 @@ class SubscribeList(generics.ListAPIView):
     def get_queryset(self):
         recipes_limit = self.request.query_params.get('recipes_limit')
         if recipes_limit:
-            return f'{Subscription.objects.filter(user=self.request.user)}
-                   f'[:int(recipes_limit)]
+            return {Subscription.objects.filter(
+                user=self.request.user
+            )}[:int(
+                recipes_limit
+            )]
         user = self.request.user
         return Subscription.objects.filter(user=user)
 
