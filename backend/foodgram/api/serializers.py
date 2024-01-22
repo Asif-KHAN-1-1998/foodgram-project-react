@@ -219,9 +219,7 @@ class SubcribeListSerializer(serializers.ModelSerializer):
         recipes = obj.author.recipes.all()
         return RecipeGetSerializer(recipes,
                                    many=True,
-                                   context={'request': \
-                                            self.context\
-                                                ['request']}).data
+                                   context={'request': self.context['request']}).data
 
     def get_recipes_count(self, obj):
         return obj.author.recipes.count()
