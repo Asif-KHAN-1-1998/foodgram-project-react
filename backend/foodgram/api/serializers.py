@@ -157,7 +157,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         ingredients = self.initial_data.get('ingredients', [])
-        if not ingredients:  # Пустоту можно проверить без len
+        if not ingredients:
             raise serializers.ValidationError(
                 'Добавьте хотя бы один ингредиент'
             )
@@ -195,26 +195,6 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         instance.tags.set(tags)
         IngredientsInRecipe.objects.filter(recipe=instance).delete()
         self.ingredients_create(ingredients_data, instance)
-
-        return super().update(instance, validated_data)
-
-    def update(self, instance, validated_data):
-        ingredients_data = validated_data.pop('ingredients', [])
-        tags = validated_data.pop('tags', [])
-        instance.tags.set(tags)
-        IngredientsInRecipe.objects.filter(recipe=instance).delete()
-        ingredients_in_recipe_list = []
-
-        for ingredient_data in ingredients_data:
-            ingredient_obj = get_object_or_404(
-                Ingredient, id=ingredient_data['id'])
-
-            ingredients_in_recipe_list.append(IngredientsInRecipe(
-                recipe=instance,
-                ingredient=ingredient_obj,
-                amount=ingredient_data['amount'],
-            ))
-        IngredientsInRecipe.objects.bulk_create(ingredients_in_recipe_list)
 
         return super().update(instance, validated_data)
 
