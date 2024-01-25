@@ -22,4 +22,5 @@ class Command(BaseCommand):
                 )
                 if created:
                     counter += 1
-                print(f"Добавлено {counter} ингредиентов" "из файла {csv_file_path}")
+                print(f"Добавлено {counter} ингредиентов"
+                      "из файла {csv_file_path}")

@@ -81,7 +81,8 @@ class IngredientWriteSerializer(serializers.ModelSerializer):
 
 class IngredientRecipeSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField()
-    measurement_unit = serializers.CharField(source="ingredient.measurement_unit")
+    measurement_unit = serializers.CharField(
+        source="ingredient.measurement_unit")
     name = serializers.CharField(source="ingredient.name")
     amount = serializers.IntegerField(
         validators=[MinValueValidator(MIN), MaxValueValidator(MAX)]
@@ -163,7 +164,8 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     def validate(self, data):
         ingredients = self.initial_data.get("ingredients", [])
         if not ingredients:
-            raise serializers.ValidationError("Добавьте хотя бы один ингредиент")
+            raise serializers.ValidationError(
+                "Добавьте хотя бы один ингредиент")
         return data
 
     def ingredients_create(self, ingredients, recipe):

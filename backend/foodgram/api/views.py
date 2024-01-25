@@ -141,7 +141,8 @@ class FavouriteListView(generics.ListAPIView):
 
     def list(self, request, *args, **kwargs):
         qs = self.get_queryset()
-        serializer = RecipeGetSerializer(qs, many=True, context={"request": request})
+        serializer = RecipeGetSerializer(qs, many=True,
+                                         context={"request": request})
         return Response(
             {"results": serializer.data, "count": self.get_queryset().count()}
         )
@@ -190,7 +191,8 @@ class FavouriteCreateDelete(generics.CreateAPIView, generics.DestroyAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class ShoppingCartCreateDelete(generics.CreateAPIView, generics.DestroyAPIView):
+class ShoppingCartCreateDelete(generics.CreateAPIView,
+                               generics.DestroyAPIView):
     queryset = ShoppingCart.objects.all()
     serializer_class = FavouriteSerializer
     pagination_class = None
@@ -212,7 +214,8 @@ class ShoppingCartCreateDelete(generics.CreateAPIView, generics.DestroyAPIView):
                 {"errors": "Рецепт уже есть в списке покупок"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        shopping_cart = ShoppingCart.objects.create(user=request.user, recipe=recipe)
+        shopping_cart = ShoppingCart.objects.create(user=request.user,
+                                                    recipe=recipe)
         serializer = FavouriteSerializer(recipe, many=False)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -242,7 +245,8 @@ class DownloadShoppingCart(APIView):
 
     def get(self, request, *args, **kwargs):
         ingredients = (
-            IngredientsInRecipe.objects.filter(recipe__carts__user=request.user)
+            IngredientsInRecipe.objects.filter(
+                recipe__carts__user=request.user)
             .values("ingredient__name", "ingredient__measurement_unit")
             .annotate(ingredient_amount=Sum("amount"))
         )
@@ -253,7 +257,8 @@ class DownloadShoppingCart(APIView):
             amount = ingredient["ingredient_amount"]
             shopping_list.append(f"\n{name} - {amount}, {unit}")
         response = HttpResponse(shopping_list, content_type="text/plain")
-        response["Content-Disposition"] = "attachment;" 'filename="shopping_cart.txt"'
+        response["Content-Disposition"] = ("attachment;"
+                                           'filename="shopping_cart.txt"')
         return response
 
 
@@ -293,7 +298,8 @@ class SubscribeCreateDelete(generics.CreateAPIView, generics.DestroyAPIView):
                 {"errors": "Подписка уже существует"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        subscribe = Subscription.objects.create(user=request.user, author=author)
+        subscribe = Subscription.objects.create(user=request.user,
+                                                author=author)
         serializer = SubcribeListSerializer(
             subscribe, many=False, context={"request": request}
         )

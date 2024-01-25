@@ -19,7 +19,9 @@ class Tag(models.Model):
     )
     color = ColorField()
     slug = models.SlugField(
-        unique=True, verbose_name="Slug", validators=(validators.validate_slug,)
+        unique=True,
+        verbose_name="Slug",
+        validators=(validators.validate_slug,)
     )
 
     class Meta:
@@ -86,8 +88,10 @@ class Recipe(models.Model):
     )
     cooking_time = models.PositiveSmallIntegerField(
         validators=[
-            MinValueValidator(settings.MIN_TIME, message="Максимум - 1 минута"),
-            MaxValueValidator(settings.MAX_TIME, message="Максимум - 120 минут"),
+            MinValueValidator(settings.MIN_TIME,
+                              message="Максимум - 1 минута"),
+            MaxValueValidator(settings.MAX_TIME,
+                              message="Максимум - 120 минут"),
         ],
         verbose_name="Время приготовления рецепта",
     )
