@@ -1,16 +1,10 @@
 from django.urls import path
-from .views import (TagList,
-                    TagDetail,
-                    RecipeListCreate,
-                    RecipeRetrieveUpdateDelete,
-                    FavouriteCreateDelete,
-                    ShoppingCartCreateDelete,
-                    DownloadShoppingCart,
-                    IngredientList,
-                    IngredientDetail,
-                    SubscribeList,
-                    SubscribeCreateDelete,
-                    FavouriteListView)
+
+from .views import (DownloadShoppingCart, FavouriteCreateDelete,
+                    FavouriteListView, IngredientDetail, IngredientList,
+                    RecipeListCreate, RecipeRetrieveUpdateDelete,
+                    ShoppingCartCreateDelete, SubscribeCreateDelete,
+                    SubscribeList, TagDetail, TagList)
 
 urlpatterns = [
     path('tags/', TagList.as_view()),

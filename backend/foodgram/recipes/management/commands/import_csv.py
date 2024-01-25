@@ -1,9 +1,9 @@
 import csv
-import os
 import logging
-from django.core.management.base import BaseCommand
-from django.conf import settings
+import os
 
+from django.conf import settings
+from django.core.management.base import BaseCommand
 from recipes.models import Ingredient
 
 logger = logging.getLogger(__name__)

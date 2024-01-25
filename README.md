@@ -32,5 +32,6 @@ Postman
 9. docker exec backend python manage.py importtag_csv
 
 Авторизация 
+http://foodgramm98.ddns.net
 email = admin@mail.ru
 password= admin

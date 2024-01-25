@@ -1,31 +1,21 @@
-from rest_framework import generics, permissions, status, filters
-from rest_framework.response import Response
-from .serializers import (TagSerializer,
-                          IngredientSerializer,
-                          RecipeGetSerializer,
-                          RecipeCreateSerializer,
-                          FavouriteSerializer,
-                          SubcribeListSerializer,
-                          SubscriptionCreateSerializer,
-                          )
+import django_filters
+from django.db.models import Q, Sum
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from recipes.models import (Favourite, Ingredient, IngredientsInRecipe, Recipe,
+                            ShoppingCart, Subscription, Tag)
+from rest_framework import filters, generics, permissions, status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
-from django.db.models import Q
-import django_filters
-from .filters import TagFilter, IngredientFilter, RecipesFilter
-from users.models import CustomUser
-from recipes.models import (Ingredient,
-                            Recipe,
-                            Tag,
-                            Favourite,
-                            Subscription,
-                            ShoppingCart,
-                            IngredientsInRecipe,
-                            )
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponse
-from django.db.models import Sum
+from rest_framework.response import Response
 from rest_framework.views import APIView
+from users.models import CustomUser
+
+from .filters import IngredientFilter, RecipesFilter, TagFilter
+from .serializers import (FavouriteSerializer, IngredientSerializer,
+                          RecipeCreateSerializer, RecipeGetSerializer,
+                          SubcribeListSerializer, SubscriptionCreateSerializer,
+                          TagSerializer)
 
 
 class TagList(generics.ListAPIView):
@@ -245,8 +235,8 @@ class DownloadShoppingCart(APIView):
             amount = ingredient['ingredient_amount']
             shopping_list.append(f'\n{name} - {amount}, {unit}')
         response = HttpResponse(shopping_list, content_type='text/plain')
-        response['Content-Disposition'] = \
-            'attachment; filename="shopping_cart.txt"'
+        response['Content-Disposition'] = (f'attachment; 
+                                           filename="shopping_cart.txt"')
         return response
 
 

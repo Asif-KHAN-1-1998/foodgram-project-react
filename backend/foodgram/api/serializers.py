@@ -1,20 +1,17 @@
+from django.conf import settings
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.shortcuts import get_object_or_404
-from drf_extra_fields.fields import Base64ImageField
-from rest_framework import serializers
 from djoser.serializers import (UserCreateSerializer
                                 as DjoserUserCreateSerializer)
-
-from recipes.models import (CustomUser,
-                            Subscription,
-                            Tag,
-                            Ingredient,
-                            IngredientsInRecipe,
-                            Recipe)
+from drf_extra_fields.fields import Base64ImageField
 from recipes import validators
-from django.core.validators import MinValueValidator, MaxValueValidator
-from django.conf import settings
+from recipes.models import (CustomUser, Ingredient, IngredientsInRecipe,
+                            Recipe, Subscription, Tag)
+from rest_framework import serializers
 
 User = CustomUser
+MAX = 32000
+MIN = 1
 
 
 class UserCreateSerializer(DjoserUserCreateSerializer):
@@ -88,7 +85,7 @@ class IngredientRecipeSerializer(serializers.ModelSerializer):
         source='ingredient.measurement_unit')
     name = serializers.CharField(source='ingredient.name')
     amount = serializers.IntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(32000)])
+        validators=[MinValueValidator(MIN), MaxValueValidator(MAX)])
 
     class Meta:
         model = IngredientsInRecipe
@@ -103,6 +100,10 @@ class RecipeGetSerializer(serializers.ModelSerializer):
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
     ingredients = serializers.SerializerMethodField()
+    count = serializers.SerializerMethodField()
+
+    def get_count(self, obj):
+        return 1
 
     def get_image(self, obj):
         if obj.image:
@@ -156,11 +157,22 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         ingredients = self.initial_data.get('ingredients', [])
-        if not ingredients:
+        if not ingredients:  # Пустоту можно проверить без len
             raise serializers.ValidationError(
                 'Добавьте хотя бы один ингредиент'
             )
         return data
+
+    def ingredients_create(self, ingredients, recipe):
+        ingredients_in_recipe_list = []
+        for ingredient in ingredients:
+            ingredient_obj = get_object_or_404(Ingredient, id=ingredient['id'])
+            ingredients_in_recipe_list.append(IngredientsInRecipe(
+                recipe=recipe,
+                ingredient=ingredient_obj,
+                amount=ingredient['amount'],
+            ))
+        IngredientsInRecipe.objects.bulk_create(ingredients_in_recipe_list)
 
     def create(self, validated_data):
         ingredients_data = validated_data.pop('ingredients')
@@ -173,21 +185,18 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
 
-        ingredients_in_recipe_list = []
-
-        for ingredient_data in ingredients_data:
-            ingredient_obj = get_object_or_404(
-                Ingredient, id=ingredient_data['id'])
-
-            ingredients_in_recipe_list.append(IngredientsInRecipe(
-                recipe=recipe,
-                ingredient=ingredient_obj,
-                amount=ingredient_data['amount'],
-            ))
-
-        IngredientsInRecipe.objects.bulk_create(ingredients_in_recipe_list)
+        self.ingredients_create(ingredients_data, recipe)
 
         return recipe
+
+    def update(self, instance, validated_data):
+        ingredients_data = validated_data.pop('ingredients', [])
+        tags = validated_data.pop('tags', [])
+        instance.tags.set(tags)
+        IngredientsInRecipe.objects.filter(recipe=instance).delete()
+        self.ingredients_create(ingredients_data, instance)
+
+        return super().update(instance, validated_data)
 
     def update(self, instance, validated_data):
         ingredients_data = validated_data.pop('ingredients', [])
