@@ -3,9 +3,10 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from recipes import validators
 from users.models import CustomUser
-from django.conf import settings   
+from django.conf import settings
 
 User = CustomUser
+
 
 class Tag(models.Model):
     """Модель тэга."""
@@ -168,7 +169,6 @@ class Subscription(models.Model):
 
     def __str__(self):
         return f'Пользователь {self.user} подписался на автора {self.author}.'
-
 
 
 class ShoppingCart(models.Model):

@@ -32,7 +32,7 @@ class UserGetSerializer(UserSerializer):
         )
 
     def get_is_subscribed(self, obj):
-        request = self.context.get('request')          
+        request = self.context.get('request')
         if request.user.is_authenticated:
             return request.user.follower.filter(
                 author=obj

@@ -200,7 +200,7 @@ class ShoppingCartCreateDelete(generics.CreateAPIView,
                             status=status.HTTP_400_BAD_REQUEST)
         recipe = get_object_or_404(Recipe, id=recipe)
         shopping_cart = request.user.shopping_cart.filter(recipe=recipe)
-            
+
         if shopping_cart.exists():
             return Response({'errors':
                              'Рецепт уже есть в списке покупок'},
@@ -282,7 +282,7 @@ class SubscribeCreateDelete(generics.CreateAPIView,
                             status=status.HTTP_400_BAD_REQUEST)
         author = get_object_or_404(CustomUser, id=author)
         subscribe = request.user.follower.filter(
-        author=author)
+            author=author)
         if subscribe.exists():
             return Response({'errors': 'Подписка уже существует'},
                             status=status.HTTP_400_BAD_REQUEST)
