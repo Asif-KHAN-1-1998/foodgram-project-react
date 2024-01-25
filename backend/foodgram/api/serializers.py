@@ -4,10 +4,11 @@ from django.shortcuts import get_object_or_404
 from djoser.serializers import \
     UserCreateSerializer as DjoserUserCreateSerializer
 from drf_extra_fields.fields import Base64ImageField
+from rest_framework import serializers
+
 from recipes import validators
 from recipes.models import (CustomUser, Ingredient, IngredientsInRecipe,
                             Recipe, Subscription, Tag)
-from rest_framework import serializers
 
 User = CustomUser
 MAX = 32000
