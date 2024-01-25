@@ -134,7 +134,7 @@ class FavouriteListView(generics.ListAPIView):
 
                                          & Q(tags__slug__in=tags)
                                          ).distinct()
-        return Recipe.objects.filter(id__in=fvs)[:0]
+        return Recipe.objects.none()
 
     def list(self, request, *args, **kwargs):
         qs = self.get_queryset()
@@ -154,15 +154,14 @@ class FavouriteCreateDelete(generics.CreateAPIView, generics.DestroyAPIView):
     def create(self, request, *args, **kwargs):
         recipe = self.kwargs.get('recipe')
         if not recipe:
-            return Response({"errors":
-                             "Рецепт уже есть в избранном"},
+            return Response({'errors':
+                             'Рецепт уже есть в избранном'},
                             status=status.HTTP_400_BAD_REQUEST)
         recipe = get_object_or_404(Recipe, id=recipe)
-        favourite = Favourite.objects.filter(
-            user=request.user, recipe=recipe)
+        favourite = request.user.favourites.filter(recipe=recipe)
         if favourite.exists():
-            return Response({"errors":
-                             "Рецепт уже есть в избранном"},
+            return Response({'errors':
+                             'Рецепт уже есть в избранном'},
                             status=status.HTTP_400_BAD_REQUEST)
         favourite = Favourite.objects.create(
             user=request.user, recipe=recipe)
@@ -172,15 +171,14 @@ class FavouriteCreateDelete(generics.CreateAPIView, generics.DestroyAPIView):
     def destroy(self, request, *args, **kwargs):
         recipe = self.kwargs.get('recipe')
         if not recipe:
-            return Response({"errors":
-                             "Рецепт уже есть в избранном"},
+            return Response({'errors':
+                             'Рецепт уже есть в избранном'},
                             status=status.HTTP_400_BAD_REQUEST)
         recipe = get_object_or_404(Recipe, id=recipe)
-        favourite = Favourite.objects.filter(
-            user=request.user, recipe=recipe)
+        favourite = request.user.favourites.filter(recipe=recipe)
         if not favourite.exists():
-            return Response({"errors":
-                             "Рецепт уже есть в избранном"},
+            return Response({'errors':
+                             'Рецепт уже есть в избранном'},
                             status=status.HTTP_400_BAD_REQUEST)
         favourite.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -197,15 +195,15 @@ class ShoppingCartCreateDelete(generics.CreateAPIView,
     def create(self, request, *args, **kwargs):
         recipe = self.kwargs.get('recipe')
         if not recipe:
-            return Response({"errors":
-                             "Рецепт уже есть в списке покупок"},
+            return Response({'errors':
+                             'Рецепт уже есть в списке покупок'},
                             status=status.HTTP_400_BAD_REQUEST)
         recipe = get_object_or_404(Recipe, id=recipe)
-        shopping_cart = ShoppingCart.objects.filter(
-            user=request.user, recipe=recipe)
+        shopping_cart = request.user.shopping_cart.filter(recipe=recipe)
+            
         if shopping_cart.exists():
-            return Response({"errors":
-                             "ецепт уже есть в списке покупок"},
+            return Response({'errors':
+                             'Рецепт уже есть в списке покупок'},
                             status=status.HTTP_400_BAD_REQUEST)
         shopping_cart = ShoppingCart.objects.create(
             user=request.user, recipe=recipe)
@@ -215,14 +213,14 @@ class ShoppingCartCreateDelete(generics.CreateAPIView,
     def destroy(self, request, *args, **kwargs):
         recipe = self.kwargs.get('recipe')
         if not recipe:
-            return Response({"errors":
-                             "Рецепт уже есть в списке покупок"},
+            return Response({'errors':
+                             'Рецепт уже есть в списке покупок'},
                             status=status.HTTP_400_BAD_REQUEST)
         recipe = get_object_or_404(Recipe, id=recipe)
-        shopping_cart = ShoppingCart.objects.filter(
-            user=request.user, recipe=recipe)
+        shopping_cart = request.user.shopping_cart.filter(recipe=recipe)
         if not shopping_cart.exists():
-            return Response({"errors": "Рецепт уже есть в списке покупок"},
+            return Response({'errors':
+                             'Рецепт уже есть в списке покупок'},
                             status=status.HTTP_400_BAD_REQUEST)
         shopping_cart.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -263,13 +261,10 @@ class SubscribeList(generics.ListAPIView):
     def get_queryset(self):
         recipes_limit = self.request.query_params.get('recipes_limit')
         if recipes_limit:
-            return {Subscription.objects.filter(
-                user=self.request.user
-            )}[:int(
+            return self.request.user.follower.all()[:int(
                 recipes_limit
             )]
-        user = self.request.user
-        return Subscription.objects.filter(user=user)
+        return self.request.user.follower.all()
 
 
 class SubscribeCreateDelete(generics.CreateAPIView,
@@ -283,13 +278,13 @@ class SubscribeCreateDelete(generics.CreateAPIView,
     def create(self, request, *args, **kwargs):
         author = self.kwargs.get('author')
         if not author:
-            return Response({"errors": "Not author"},
+            return Response({'errors': 'Not author'},
                             status=status.HTTP_400_BAD_REQUEST)
         author = get_object_or_404(CustomUser, id=author)
-        subscribe = Subscription.objects.filter(
-            user=request.user, author=author)
+        subscribe = request.user.follower.filter(
+        author=author)
         if subscribe.exists():
-            return Response({"errors": "Подписка уже существует"},
+            return Response({'errors': 'Подписка уже существует'},
                             status=status.HTTP_400_BAD_REQUEST)
         subscribe = Subscription.objects.create(
             user=request.user, author=author)

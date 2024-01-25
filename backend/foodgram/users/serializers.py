@@ -2,7 +2,6 @@ from rest_framework import serializers
 from djoser.serializers import UserCreateSerializer, UserSerializer
 
 from users.models import CustomUser
-from recipes.models import Subscription
 
 
 class UserSignUpSerializer(UserCreateSerializer):
@@ -33,8 +32,9 @@ class UserGetSerializer(UserSerializer):
         )
 
     def get_is_subscribed(self, obj):
-        request = self.context.get('request')
-        return (request.user.is_authenticated
-                and Subscription.objects.filter(
-                    user=request.user, author=obj
-                ).exists())
+        request = self.context.get('request')          
+        if request.user.is_authenticated:
+            return request.user.follower.filter(
+                author=obj
+            ).exists()
+        return False

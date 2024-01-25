@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from api.serializers import UserCreateSerializer
 from users.models import CustomUser
 
+# Используем djoser вместо этих вьюх!
 
 User = CustomUser
 

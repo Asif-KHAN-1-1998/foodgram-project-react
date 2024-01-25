@@ -12,7 +12,7 @@ services:
     container_name: db
 
   backend:
-    image: asifpracticum/food_backend_final:latest
+    build: ../backend/foodgram
     restart: always
     volumes:
       - static:/app/static/
@@ -24,7 +24,7 @@ services:
     container_name: backend
 
   frontend:
-    image: asifpracticum/food_frontend:latest
+    build: ../frontend
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
@@ -32,7 +32,7 @@ services:
     container_name: frontend
 
   nginx:
-    image: asifpracticum/food_nginx_final:latest
+    build: ../infra/
     ports:
       - "9000:80"
     volumes:
@@ -40,10 +40,11 @@ services:
       - ../docs/:/usr/share/nginx/html/api/docs/
       - static:/var/html/static/
       - media:/var/html/media/
+      - ../backend/foodgram/collected_static:/var/html/
     depends_on:
       - backend
     restart: always
-    container_name: nginx
+    container_name: nginx 
 
 volumes:
   static:

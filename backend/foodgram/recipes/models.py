@@ -3,29 +3,29 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from recipes import validators
 from users.models import CustomUser
-from django.conf import settings
+from django.conf import settings   
 
 User = CustomUser
-
 
 class Tag(models.Model):
     """Модель тэга."""
     name = models.CharField(
         max_length=120,
         unique=True,
-        verbose_name="Название тега",
+        verbose_name='Название тега',
         validators=(validators.validate_username, ),
     )
     color = ColorField()
     slug = models.SlugField(
         unique=True,
-        verbose_name="Slug",
+        verbose_name='Slug',
         validators=(validators.validate_slug, )
     )
 
     class Meta:
-        verbose_name = "Тег"
-        verbose_name_plural = "Теги"
+        verbose_name = 'Тег'
+        verbose_name_plural = 'Теги'
+        ordering = ['name']
 
     def __str__(self):
         return self.slug
@@ -35,17 +35,18 @@ class Ingredient(models.Model):
     """Модель ингредиента."""
     name = models.CharField(
         max_length=120,
-        verbose_name="Название ингредиента",
+        verbose_name='Название ингредиента',
         validators=(validators.validate_username, ),
     )
     measurement_unit = models.CharField(
         max_length=120,
-        verbose_name="Мера измерения",
+        verbose_name='Мера измерения',
     )
 
     class Meta:
-        verbose_name = "Ингредиент"
-        verbose_name_plural = "Ингредиенты"
+        verbose_name = 'Ингредиент'
+        verbose_name_plural = 'Ингредиенты'
+        ordering = ['name']
 
     def __str__(self):
         return self.name
@@ -81,15 +82,16 @@ class Recipe(models.Model):
     )
     cooking_time = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(settings.MIN_TIME,
-                                      message="Максимум - 1 минута"),
+                                      message='Максимум - 1 минута'),
                     MaxValueValidator(settings.MAX_TIME,
-                                      message="Максимум - 120 минут")],
+                                      message='Максимум - 120 минут')],
         verbose_name='Время приготовления рецепта'
     )
 
     class Meta:
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
+        ordering = ['name']
 
     def __str__(self):
         return self.name
@@ -136,6 +138,7 @@ class IngredientsInRecipe(models.Model):
     amount = models.PositiveIntegerField()
 
     class Meta:
+        ordering = ['-id']
         verbose_name = 'Ингредиент в рецепте'
         verbose_name_plural = 'Ингредиенты в рецепте'
 
@@ -167,6 +170,7 @@ class Subscription(models.Model):
         return f'Пользователь {self.user} подписался на автора {self.author}.'
 
 
+
 class ShoppingCart(models.Model):
     """Модель списка покупок."""
     recipe = models.ForeignKey(
@@ -184,7 +188,9 @@ class ShoppingCart(models.Model):
     )
 
     class Meta:
+        ordering = ['-id']
         verbose_name = 'Список покупок'
+        verbose_name_plural = 'Списки покупок'
 
     def __str__(self):
-        return (f'Рецепт {self.recipe} добавлен в список покупок.')
+        return f'Рецепт {self.recipe} добавлен в список покупок.'

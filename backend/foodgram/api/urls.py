@@ -17,7 +17,7 @@ urlpatterns = [
     path('tags/<int:pk>/', TagDetail.as_view()),
     path('recipes/', RecipeListCreate.as_view()),
     path('recipes/<int:pk>/', RecipeRetrieveUpdateDelete.as_view()),
-    path('recipes/<int:recipe>/favourite/', FavouriteCreateDelete.as_view()),
+    path('recipes/<int:recipe>/favorite/', FavouriteCreateDelete.as_view()),
     path('recipes/<int:recipe>/shopping_cart/',
          ShoppingCartCreateDelete.as_view()),
     path('recipes/download_shopping_cart/', DownloadShoppingCart.as_view()),

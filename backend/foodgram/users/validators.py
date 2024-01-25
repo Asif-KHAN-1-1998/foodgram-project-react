@@ -9,6 +9,6 @@ def validate_username(username):
         raise ValidationError('Недопустимое имя пользователя!')
     elif username in forbidden_symb:
         raise ValidationError(
-            f"Не допустимые символы <{username}> в имени пользователя"
+            f'Не допустимые символы <{username}> в имени пользователя'
         )
     return username
