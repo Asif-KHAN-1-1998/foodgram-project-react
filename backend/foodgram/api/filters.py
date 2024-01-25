@@ -8,42 +8,38 @@ User = get_user_model()
 
 
 class TagFilter(filters.FilterSet):
-    name = django_filters.CharFilter(
-        field_name='name', lookup_expr='icontains')
+    name = django_filters.CharFilter(field_name="name", lookup_expr="icontains")
 
     class Meta:
         model = Tag
-        fields = ['name', 'slug']
+        fields = ["name", "slug"]
 
 
 class IngredientFilter(filters.FilterSet):
-    name = django_filters.CharFilter(
-        field_name='name', lookup_expr='icontains')
+    name = django_filters.CharFilter(field_name="name", lookup_expr="icontains")
 
     class Meta:
         model = Ingredient
-        fields = ['name', 'measurement_unit']
+        fields = ["name", "measurement_unit"]
 
 
 class RecipesFilter(FilterSet):
     tags = filters.ModelMultipleChoiceFilter(
         queryset=Tag.objects.all(),
-        field_name='tags__slug',
-        to_field_name='slug',
+        field_name="tags__slug",
+        to_field_name="slug",
     )
     author = filters.ModelChoiceFilter(
         queryset=User.objects.all(),
     )
-    is_favorited = filters.BooleanFilter(
-        method='get_is_favorited'
-    )
+    is_favorited = filters.BooleanFilter(method="get_is_favorited")
     is_in_shopping_cart = filters.BooleanFilter(
-        method='get_is_in_shopping_cart',
+        method="get_is_in_shopping_cart",
     )
 
     class Meta:
         model = Recipe
-        fields = ['is_favorited', 'author', 'tags', 'is_in_shopping_cart']
+        fields = ["is_favorited", "author", "tags", "is_in_shopping_cart"]
 
     def get_is_favorited(self, queryset, name, value):
         user = self.request.user

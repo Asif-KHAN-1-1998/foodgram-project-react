@@ -7,20 +7,22 @@ from .models import (Favourite, Ingredient, IngredientsInRecipe, Recipe,
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     list_display = (
-        'id',
-        'author',
-        'name',
-        'image',
-        'text',)
+        "id",
+        "author",
+        "name",
+        "image",
+        "text",
+    )
 
 
 @admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
     list_display = (
-        'id',
-        'name',
-        'measurement_unit',)
-    search_fields = ('^name',)
+        "id",
+        "name",
+        "measurement_unit",
+    )
+    search_fields = ("^name",)
 
 
 admin.site.register(Favourite)
